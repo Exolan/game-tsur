@@ -1,0 +1,77 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 13vw;
+  height: 13vw;
+  color: aliceblue;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.ready {
+  background-color: #ade1bd;
+}
+
+.notReady {
+  background-color: #d4eed7;
+}
+
+.imgBlock {
+  display: flex;
+  width: 9vw;
+  height: 80%;
+  align-items: end;
+}
+
+.imgPlayer {
+  width: 100%;
+  height: auto;
+}
+
+.statusBlock {
+  width: 13vw;
+  height: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5vw;
+}
+
+.statusImgBlock {
+  width: max-content;
+  height: max-content;
+  display: flex;
+}
+
+.imgStatus {
+  width: 24px;
+  height: 24px;
+}
+
+.ready .statusBlock {
+  background-color: #1d5564;
+}
+
+.notReady .statusBlock {
+  background-color: #ade1bd;
+}
+
+.statusText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.id {
+  font-size: 18px;
+}
+
+.text {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.ready .text {
+  color: #ade1bd;
+}

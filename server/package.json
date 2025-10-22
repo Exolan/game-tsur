@@ -1,0 +1,14 @@
+{
+  "name": "game-server",
+  "version": "v0.0.1",
+  "dependencies": {
+    "express": "^5.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "build-client": "cd ../client && npm run build",
+    "start-full": "npm run build-client && node server.js"
+  }
+}

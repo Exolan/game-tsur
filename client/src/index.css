@@ -1,0 +1,56 @@
+@font-face {
+  font-family: "Golos";
+  src: url("../public/fonts/GolosText-Regular.woff2") format("woff2");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "Golos";
+  src: url("../public/fonts/GolosText-Bold.woff2") format("woff2");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "Golos";
+  src: url("../public/fonts/GolosText-Medium.woff2") format("woff2");
+  font-weight: 500;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  color: #1d5564;
+  font-family: "Golos", sans-serif;
+  margin: 0;
+}
+
+h1,
+h2 {
+  font-weight: 700;
+  font-size: 74px;
+}
+
+h3 {
+  font-weight: 500;
+  font-size: 44px;
+}
+
+h4 {
+  font-weight: 500;
+  font-size: 36px;
+}
+
+button {
+  border: none;
+  background-color: #1d5564;
+  font-family: "Golos", sans-serif;
+  font-weight: 500;
+  font-size: 38px;
+  border-radius: 20px;
+}

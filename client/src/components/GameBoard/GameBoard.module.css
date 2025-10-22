@@ -1,0 +1,57 @@
+.conteiner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 5rem;
+  background-color: #003049;
+  border-radius: 30px;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.infoImg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-inline: 4rem;
+}
+
+.infoText {
+  color: aliceblue;
+}
+
+.text {
+  text-wrap: wrap;
+}
+
+.buttons {
+  display: grid;
+  padding: 20px;
+  grid-template-columns: 20% 20% 20% 20%;
+  grid-template-rows: 100px 100px;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.button {
+  border-radius: 20px;
+  border: none;
+}
+
+.modal {
+  position: absolute;
+  background-color: aliceblue;
+  top: 45%;
+  left: 45%;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.modalButtons {
+  display: flex;
+  gap: 10px;
+}

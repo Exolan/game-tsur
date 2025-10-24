@@ -84,7 +84,7 @@ class GameSession {
         "specialist",
         {
           isSelect: false,
-          displayName: "Профессор Синтезюк",
+          displayName: "Отоларинголог Рефлекторова",
           description:
             "Гений медицинских технологий. Создает инновационные методы лечения.",
           image: "./person.png",

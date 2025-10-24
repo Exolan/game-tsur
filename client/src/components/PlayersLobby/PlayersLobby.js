@@ -63,7 +63,9 @@ function PlayersLobby() {
         <div className={styles.players}>{renderPlayers()}</div>
         <div className={styles.footer}>
           {isReady ? (
-            <p>Ожидайте остальных игроков</p>
+            <div className={styles.waitingBlock}>
+              <h4 className={styles.waitingText}>ожидайте остальных игроков</h4>
+            </div>
           ) : (
             <button onClick={handleReady} className={styles.button}>
               <h4 className={styles.buttonText}>готов</h4>

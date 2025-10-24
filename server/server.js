@@ -54,11 +54,10 @@ io.on("connection", (socket) => {
   socket.on("selectRole", (roleKey) => {
     const player = players.get(socketID);
     if (player) {
-      player.role = roleKey;
-
       const role = roles.get(roleKey);
       if (role) {
         role.isSelect = true;
+        player.role = roleKey;
       }
     }
     console.log(`Пользователь ${socketID} выбрал роль ${roleKey}`);

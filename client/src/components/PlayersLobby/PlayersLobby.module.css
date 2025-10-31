@@ -62,7 +62,12 @@
   height: 50px;
   display: flex;
   justify-content: center;
-  background-color: #a4dcdd;
+  background-color: #d9d9d9;
+  border-radius: 20px;
+}
+
+.waitingText {
+  color: #ffffff;
 }
 
 .buttonText {
@@ -72,6 +77,6 @@
 .socket {
   max-width: 300px;
   max-height: 300px;
-  background-color: #d4eed7;
+  background-color: #d9d9d9;
   border-radius: 20px;
 }

@@ -29,6 +29,7 @@ p {
   font-family: "Golos", sans-serif;
   margin-inline: 0;
   margin-block: 0;
+  cursor: default;
 }
 
 h1,
@@ -54,4 +55,17 @@ button {
   font-weight: 500;
   font-size: 38px;
   border-radius: 20px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button h4 {
+  transition: color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #a4dcdd;
+}
+
+button:hover h4 {
+  color: #1d5564;
 }

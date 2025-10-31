@@ -37,8 +37,8 @@ function GameCards({ roles }) {
               <RoleCard
                 key={roleKey}
                 roleKey={roleKey}
-                disabled={roleSelect}
                 roleData={roleData}
+                roleSelect={roleSelect}
                 setRoleSelect={setRoleSelect}
               />
             );

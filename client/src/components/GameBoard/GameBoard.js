@@ -17,10 +17,8 @@ function GameBoard({ userGameData }) {
     socket.emit(action, data);
   }
 
-  function handleNewModal(obj) {
-    console.log("СОБЫТИЕ !!!");
-
-    setModalData(obj);
+  function handleNewModal(data) {
+    setModalData(data);
   }
 
   function onClose() {
@@ -60,24 +58,81 @@ function GameBoard({ userGameData }) {
           </div>
         </div>
       )}
-      <div className={styles.info}>
-        <div className={styles.infoImg}>
-          <img src={roleData.image} />
+      <header className={styles.header}>
+        <div className={styles.headerTitle}>
+          <h4 className={styles.title}>ФАБРИКА ПРОЦЕССОВ</h4>
         </div>
-        <div className={styles.infoText}>
-          <div className={styles.textBlock}>
-            <h2 className={styles.textLabel}>Описание персонажа</h2>
-            <p className={styles.text}>{roleData.description}</p>
-          </div>
-          {roleData.condition && (
-            <div className={styles.textBlock}>
-              <h2 className={styles.textLabel}>Симптомы</h2>
-              <p className={styles.text}>{roleData.condition}</p>
+        <div className={styles.headerPageName}>
+          <h2 className={styles.pageName}>КАРТОЧКА ПЕРСОНАЖА</h2>
+        </div>
+      </header>
+      <div className={styles.block}>
+        <div className={styles.infoBlock}>
+          <div className={styles.cardBlock}>
+            <div className={styles.cardBlockImg}>
+              <img src={roleData.image} className={styles.cardImg} />
             </div>
-          )}
+            <div className={styles.cardBlockText}>
+              <h4 className={styles.cardText}>{roleData.displayName}</h4>
+            </div>
+          </div>
+          <div className={styles.descBlock}>
+            <header className={styles.dataTitle}>
+              <h4 className={styles.titleText}>Описание персонажа</h4>
+            </header>
+            <div className={styles.dataText}>
+              <div className={styles.textBlock}>
+                <img
+                  src="/images/profile.png"
+                  alt=""
+                  className={styles.textImage}
+                />
+                <p className={styles.text}>{roleData.profile}</p>
+              </div>
+              <div className={styles.textBlock}>
+                <img
+                  src="/images/desc.png"
+                  alt=""
+                  className={styles.textImage}
+                />
+                <p className={styles.text}>{roleData.description}</p>
+              </div>
+              <div className={styles.textBlock}>
+                <img
+                  src="/images/task.png"
+                  alt=""
+                  className={styles.textImage}
+                />
+                <p className={styles.text}>{roleData.task}</p>
+              </div>
+            </div>
+          </div>
+          <div className={styles.numberBlock}>
+            <header className={styles.dataTitle}>
+              <h4 className={styles.titleText}>Номер телефона</h4>
+            </header>
+            <div className={styles.dataText}>
+              <p className={styles.text}>{roleData.number}</p>
+            </div>
+          </div>
+          <div className={styles.passwordBlock}>
+            <header className={styles.dataTitle}>
+              <h4 className={styles.titleText}>Пароль от Госуслуг</h4>
+            </header>
+            <div className={styles.dataText}>
+              <p className={styles.text}>{roleData.password}</p>
+            </div>
+          </div>
+        </div>
+        <div className={styles.buttonBlock}>
+          <button className={styles.button}>
+            <h4 className={styles.buttonText} onClick={() => onClick()}>
+              перейти к действиям
+            </h4>
+          </button>
         </div>
       </div>
-      <div className={styles.buttons}>
+      {/* <div className={styles.buttons}>
         {roleData.buttons.map((button, index) => {
           return (
             button.isActive && (
@@ -91,7 +146,7 @@ function GameBoard({ userGameData }) {
             )
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }

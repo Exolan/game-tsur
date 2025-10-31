@@ -4,11 +4,15 @@
   height: 310px;
   transform-style: preserve-3d;
   transform-origin: center right;
-  transition: transform 1s;
+  transition: all 1s;
 }
 
 .card.is-flipped {
   transform: translateX(-100%) rotateY(-180deg);
+}
+
+.card.is-selected .cardBack {
+  filter: brightness(0.6) saturate(1.5) hue-rotate(15deg);
 }
 
 .cardBack {
@@ -21,6 +25,26 @@
   flex-direction: column;
   background-color: #ade1bd;
   overflow: hidden;
+}
+
+.card:not(.is-selected) {
+  cursor: pointer;
+}
+
+.cardBack svg path {
+  transition: fill 0.2s ease-in-out;
+}
+
+.card:not(.is-selected) .cardBack:hover svg path {
+  fill: #1d5564;
+}
+
+.card:not(.is-selected) .cardBack:hover .cardBlockText {
+  background-color: #1d5564;
+}
+
+.card:not(.is-selected) .cardBack:hover .cardText {
+  color: #ade1bd;
 }
 
 .cardFace {
@@ -47,6 +71,7 @@
   height: 100%;
   justify-content: center;
   align-items: center;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .cardFace .cardBlockText {
@@ -57,10 +82,15 @@
   font-size: 18px;
   font-weight: 500;
   text-align: center;
+  transition: color 0.2s ease-in-out;
 }
 
 .cardFace .cardText {
   color: #ade1bd;
+}
+
+.cardBack .cardText {
+  color: #fcfcf2;
 }
 
 .cardImg {

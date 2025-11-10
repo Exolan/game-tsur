@@ -4,6 +4,7 @@ import styles from "./GameBoard.module.css";
 
 function GameBoard({ userGameData }) {
   const [modalData, setModalData] = useState(null);
+  const [isActionsModal, setIsActionsModal] = useState(false);
   const { role, roleData } = userGameData;
 
   function handleEmit(action, data) {
@@ -15,6 +16,10 @@ function GameBoard({ userGameData }) {
     console.log(`Создан emit ${action}`);
 
     socket.emit(action, data);
+  }
+
+  function handleActionModal() {
+    isActionsModal ? setIsActionsModal(false) : setIsActionsModal(true);
   }
 
   function handleNewModal(data) {
@@ -56,6 +61,23 @@ function GameBoard({ userGameData }) {
               );
             })}
           </div>
+        </div>
+      )}
+      {isActionsModal && (
+        <div className={styles.modal}>
+          {roleData.buttons.map((button, index) => {
+            return (
+              button.isActive && (
+                <button
+                  key={index}
+                  onClick={() => handleEmit(button.action)}
+                  className={styles.button}
+                >
+                  {button.label}
+                </button>
+              )
+            );
+          })}
         </div>
       )}
       <header className={styles.header}>
@@ -126,7 +148,10 @@ function GameBoard({ userGameData }) {
         </div>
         <div className={styles.buttonBlock}>
           <button className={styles.button}>
-            <h4 className={styles.buttonText} onClick={() => onClick()}>
+            <h4
+              className={styles.buttonText}
+              onClick={() => handleActionModal()}
+            >
               перейти к действиям
             </h4>
           </button>

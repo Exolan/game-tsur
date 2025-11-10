@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 13vw;
-  height: 13vw;
+  width: 100%;
+  height: 100%;
   color: #d9d9d9;
   border-radius: 20px;
   overflow: hidden;
@@ -19,7 +19,7 @@
 
 .imgBlock {
   display: flex;
-  width: 9vw;
+  width: 60%;
   height: 80%;
   align-items: end;
 }
@@ -30,7 +30,7 @@
 }
 
 .statusBlock {
-  width: 13vw;
+  width: 100%;
   height: 20%;
   display: flex;
   justify-content: center;

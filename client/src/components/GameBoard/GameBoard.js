@@ -65,19 +65,34 @@ function GameBoard({ userGameData }) {
       )}
       {isActionsModal && (
         <div className={styles.modal}>
-          {roleData.buttons.map((button, index) => {
-            return (
-              button.isActive && (
-                <button
-                  key={index}
-                  onClick={() => handleEmit(button.action)}
-                  className={styles.button}
-                >
-                  {button.label}
-                </button>
-              )
-            );
-          })}
+          <div className={styles.modalBox}>
+            <div className={styles.modalHeader}>
+              <div className={styles.modalTitle}>
+                <h2 className={styles.title}>Выберите одно из действий</h2>
+              </div>
+              <div
+                className={styles.headerButton}
+                onClick={() => handleActionModal()}
+              >
+                <img src="/images/close.png" alt="close modal" />
+              </div>
+            </div>
+            <div className={styles.modalButtons}>
+              {roleData.buttons.map((button, index) => {
+                return (
+                  button.isActive && (
+                    <button
+                      key={index}
+                      onClick={() => handleEmit(button.action)}
+                      className={styles.button}
+                    >
+                      <p>{button.label}</p>
+                    </button>
+                  )
+                );
+              })}
+            </div>
+          </div>
         </div>
       )}
       <header className={styles.header}>
@@ -157,21 +172,6 @@ function GameBoard({ userGameData }) {
           </button>
         </div>
       </div>
-      {/* <div className={styles.buttons}>
-        {roleData.buttons.map((button, index) => {
-          return (
-            button.isActive && (
-              <button
-                key={index}
-                onClick={() => handleEmit(button.action)}
-                className={styles.button}
-              >
-                {button.label}
-              </button>
-            )
-          );
-        })}
-      </div> */}
     </div>
   );
 }

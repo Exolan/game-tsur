@@ -2,19 +2,18 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   background-color: white;
-  height: 100%;
+  height: 100vh;
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 15vh;
+  height: 10vh;
   width: 100%;
   background-color: #a4dcdd;
-  padding-block: 1em;
+  padding: 94x 48px;
 }
 
 .headerTitle {
@@ -40,9 +39,9 @@
 .players {
   display: grid;
   margin-top: 5vh;
-  grid-template-columns: 13vw 13vw 13vw 13vw 13vw;
-  grid-template-rows: 13vw 13vw;
-  gap: 3vw;
+  grid-template-columns: repeat(5, 232px);
+  grid-template-rows: repeat(2, 310px);
+  gap: 40px;
   border-radius: 30px;
 }
 
@@ -54,14 +53,14 @@
 
 .button {
   width: 100%;
-  height: 50px;
 }
 
 .waitingBlock {
   width: 100%;
-  height: 50px;
+  height: 70px;
   display: flex;
   justify-content: center;
+  align-items: center;
   background-color: #d9d9d9;
   border-radius: 20px;
 }

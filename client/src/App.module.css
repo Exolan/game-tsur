@@ -59,6 +59,11 @@
   width: 100%;
 }
 
+.img {
+  height: 122px;
+  width: auto;
+}
+
 .button {
   display: flex;
   align-items: center;

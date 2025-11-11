@@ -1,32 +1,30 @@
-import React, { useState, useEffect } from "react";
-import { socket } from "../../socket";
+import React, { useState, useEffect, useMemo } from "react";
 
 import styles from "./PlayersLobby.module.css";
 import PlayerCard from "../PlayerCard/PlayerCard";
+import { GameProps, Player } from "../../interfaces";
 
-function PlayersLobby() {
-  const [players, setPlayers] = useState([]);
-  const [isReady, setIsReady] = useState(false);
+const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [isReady, setIsReady] = useState<boolean>(false);
 
-  function renderPlayers() {
-    console.log("Render players:", players);
-
-    const sockets = [];
+  const renderPlayers = useMemo(() => {
+    const cells = [];
     for (let i = 0; i < 10; i++) {
       if (players.length > i && players[i]) {
-        const [socketID, playerData] = players[i];
-        sockets.push(
+        const player = players[i];
+        cells.push(
           <div className={styles.socket} key={i}>
-            <PlayerCard key={i} isReady={playerData?.isReady} />
+            <PlayerCard key={i} isReady={player.playerData?.isReady} />
           </div>
         );
         continue;
       }
-      sockets.push(<div className={styles.socket} key={i}></div>);
+      cells.push(<div className={styles.socket} key={i}></div>);
     }
 
-    return sockets;
-  }
+    return cells;
+  }, [players]);
 
   function handleReady() {
     setIsReady(true);
@@ -34,12 +32,13 @@ function PlayersLobby() {
   }
 
   useEffect(() => {
-    function handleLobbyUpdate(data) {
-      console.log("Lobby update received:", data);
-      setPlayers(data);
+    function handleLobbyUpdate(players: Player[]) {
+      setPlayers(players);
     }
 
     socket.on("lobbyUpdate", handleLobbyUpdate);
+
+    socket.emit("getLobbyState");
 
     return () => {
       socket.off("lobbyUpdate", handleLobbyUpdate);
@@ -54,13 +53,12 @@ function PlayersLobby() {
         </div>
         <div className={styles.headerCounter}>
           <h2 className={styles.counter}>
-            Игроков: {players.length} из{" "}
-            {players.length > 4 ? players.length : 4}
+            Игроков: {players.length} из {Math.max(players.length, 4)}
           </h2>
         </div>
       </header>
       <div className={styles.block}>
-        <div className={styles.players}>{renderPlayers()}</div>
+        <div className={styles.players}>{renderPlayers}</div>
         <div className={styles.footer}>
           {isReady ? (
             <div className={styles.waitingBlock}>
@@ -75,6 +73,6 @@ function PlayersLobby() {
       </div>
     </div>
   );
-}
+};
 
 export default PlayersLobby;

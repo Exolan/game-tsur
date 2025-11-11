@@ -15,16 +15,11 @@
   gap: 67px;
 }
 
-.img {
-  max-height: 15vh;
-}
-
 .block {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12vh;
-  margin-bottom: 5vh;
   max-width: 886px;
   margin: 0 auto;
 }

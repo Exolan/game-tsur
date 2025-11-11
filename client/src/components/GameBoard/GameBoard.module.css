@@ -175,6 +175,20 @@
   justify-content: space-between;
 }
 
+.headerButton {
+  all: unset;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.headerButton:hover {
+  all: unset;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 .modalButtons {
   display: flex;
   flex-direction: column;

@@ -1,7 +1,7 @@
 const express = require("express");
-const { createServer } = require("http");
+const { createServer } = require("node:http");
 const { Server } = require("socket.io");
-const path = require("path");
+const path = require("node:path");
 const GameSession = require("./gameSession.js");
 
 function getPlayersArray() {
@@ -87,6 +87,7 @@ io.on("connection", (socket) => {
       playerSocket: socket.id,
       textEvent: "Пациент пришел на прием",
       pageEvent: "",
+      typeEvent: "message",
       buttonsEvent: [
         { id: 1, textButton: "Принять", actionButton: "therapist-accept" },
         {

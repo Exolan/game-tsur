@@ -12,21 +12,19 @@ const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
       socket.emit(action, playerSocket);
       return;
     }
-    console.log(`Создан emit ${action}`);
-
     socket.emit(action);
   }
 
-  function handleActionModal() {
-    isActionsModal ? setIsActionsModal(false) : setIsActionsModal(true);
+  function onOpen() {
+    setIsActionsModal(true);
+  }
+
+  function onClose() {
+    setIsActionsModal(false);
   }
 
   function handleNewModal(objectEvent: ObjectEvent) {
     setModalData(objectEvent);
-  }
-
-  function onClose() {
-    setModalData(null);
   }
 
   useEffect(() => {
@@ -52,7 +50,6 @@ const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
                   key={button.id}
                   onClick={() => {
                     handleEmit(button.actionButton, modalData.playerSocket);
-                    onClose();
                   }}
                 >
                   {button.textButton}
@@ -69,10 +66,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
               <div className={styles.modalTitle}>
                 <h2 className={styles.title}>Выберите одно из действий</h2>
               </div>
-              <button
-                className={styles.headerButton}
-                onClick={() => handleActionModal()}
-              >
+              <button className={styles.headerButton} onClick={() => onClose()}>
                 <img src="/images/close.png" alt="close modal" />
               </button>
             </div>
@@ -82,7 +76,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
                   button.isActive && (
                     <button
                       key={button.id}
-                      onClick={() => handleEmit(button.action, null)}
+                      onClick={() => {
+                        handleEmit(button.action, null);
+                      }}
                       className={styles.button}
                     >
                       <p>{button.label}</p>
@@ -173,7 +169,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
           </div>
         </div>
         <div className={styles.buttonBlock}>
-          <button className={styles.button} onClick={() => handleActionModal()}>
+          <button className={styles.button} onClick={() => onOpen()}>
             <h4 className={styles.buttonText}>перейти к действиям</h4>
           </button>
         </div>

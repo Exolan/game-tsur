@@ -56,6 +56,7 @@ export interface ObjectEvent {
   playerSocket: string;
   textEvent: string;
   pageEvent: string;
+  typeEvent: string;
   buttonsEvent: EventButton[];
 }
 

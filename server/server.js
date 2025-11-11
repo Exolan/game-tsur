@@ -4,6 +4,20 @@ const { Server } = require("socket.io");
 const path = require("path");
 const GameSession = require("./gameSession.js");
 
+function getPlayersArray() {
+  return Array.from(players.entries()).map(([playerSocket, playerData]) => ({
+    playerSocket,
+    playerData,
+  }));
+}
+
+function getRolesArray() {
+  return Array.from(roles.entries()).map(([roleKey, roleGameData]) => ({
+    roleKey,
+    roleGameData,
+  }));
+}
+
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -33,26 +47,27 @@ if (process.env.NODE_ENV === "production") {
 }
 
 io.on("connection", (socket) => {
-  const socketID = socket.id;
-
   socket.on("playerConnect", () => {
-    console.log("ID пользователя: ", socketID);
-    players.set(socketID, { role: null, isReady: false });
-    console.log(players);
-    io.emit("lobbyUpdate", Array.from(players.entries()));
+    players.set(socket.id, { role: null, isReady: false });
+
+    io.emit("lobbyUpdate", getPlayersArray());
   });
 
   socket.on("playerIsReady", () => {
-    const player = players.get(socketID);
+    const player = players.get(socket.id);
     if (player) {
       player.isReady = true;
     }
-    io.emit("lobbyUpdate", Array.from(players.entries()));
+    io.emit("lobbyUpdate", getPlayersArray());
     gameSession.checkAllPlayersReady(io);
   });
 
+  socket.on("getLobbyState", () => {
+    socket.emit("lobbyUpdate", getPlayersArray());
+  });
+
   socket.on("selectRole", (roleKey) => {
-    const player = players.get(socketID);
+    const player = players.get(socket.id);
     if (player) {
       const role = roles.get(roleKey);
       if (role) {
@@ -60,47 +75,46 @@ io.on("connection", (socket) => {
         player.role = roleKey;
       }
     }
-    console.log(`Пользователь ${socketID} выбрал роль ${roleKey}`);
-    io.emit("cardsUpdate", Array.from(roles.entries()));
+
+    io.emit("cardsUpdate", getRolesArray());
     gameSession.checkAllRolesSelected(io);
   });
 
   socket.on("visit-therapist", () => {
-    const socketID = socket.id;
     const therapistID = gameSession.getPlayerByRole("therapist");
 
-    console.log(therapistID);
-
-    const obj = {
-      playerID: socketID,
-      text: "Пациент пришел на прием",
-      buttons: [
-        { text: "Принять", action: "therapist-accept" },
-        { text: "Поставить в очередь", action: "therapist-reject" },
+    const objEvent = {
+      playerSocket: socket.id,
+      textEvent: "Пациент пришел на прием",
+      pageEvent: "",
+      buttonsEvent: [
+        { id: 1, textButton: "Принять", actionButton: "therapist-accept" },
+        {
+          id: 2,
+          textButton: "Поставить в очередь",
+          actionButton: "therapist-reject",
+        },
       ],
     };
 
-    console.log("Событие для терапевта");
-    io.to(therapistID).emit("new-patient", obj);
+    io.to(therapistID).emit("new-patient", objEvent);
   });
 
   socket.on("disconnect", () => {
     console.log("Пользователь отключился");
-    const player = players.get(socketID);
+    const player = players.get(socket.id);
 
-    if (gamePhase != "game") {
-      if (player && player.role) {
-        const role = roles.get(player.role);
-        if (role) {
-          role.isSelect = false;
-        }
+    if (player && player.role) {
+      const role = roles.get(player.role);
+      if (role) {
+        role.isSelect = false;
       }
-      players.delete(socketID);
-      io.emit("backToLobby", Array.from(players.entries()));
     }
+    players.delete(socket.id);
+    io.emit("backToLobby", getPlayersArray());
 
-    io.emit("lobbyUpdate", Array.from(players.entries()));
-    io.emit("cardsUpdate", Array.from(roles.entries()));
+    io.emit("lobbyUpdate", getPlayersArray());
+    io.emit("cardsUpdate", getRolesArray());
   });
 });
 

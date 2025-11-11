@@ -4,14 +4,12 @@ import { socket } from "./socket";
 import styles from "./App.module.css";
 import Game from "./components/Game/Game";
 
-function App() {
-  const [isConnected, setIsConnected] = useState(false);
-  const [playerSocket, setPlayerSocket] = useState(null);
+const App: React.FC = () => {
+  const [isConnected, setIsConnected] = useState<boolean>(false);
 
   function handleConnect() {
     if (socket.connected) {
       setIsConnected(true);
-      setPlayerSocket(socket);
       socket.emit("playerConnect");
     } else {
       socket.connect();
@@ -21,13 +19,11 @@ function App() {
   useEffect(() => {
     function handleConnectEvent() {
       setIsConnected(true);
-      setPlayerSocket(socket);
       socket.emit("playerConnect");
     }
 
     function handleDisconnect() {
       setIsConnected(false);
-      setPlayerSocket(null);
     }
 
     socket.on("connect", handleConnectEvent);
@@ -46,12 +42,13 @@ function App() {
   if (isConnected) {
     return <Game socket={socket} />;
   }
+
   return (
     <div className={styles.conteiner}>
       <header className={styles.header}>
-        <img className={styles.img} src="./images/gerb.png" />
-        <img className={styles.img} src="./images/cso.png" />
-        <img className={styles.img} src="./images/tsur.png" />
+        <img className={styles.img} src="./images/gerb.png" alt="" />
+        <img className={styles.img} src="./images/cso.png" alt="" />
+        <img className={styles.img} src="./images/tsur.png" alt="" />
       </header>
       <div className={styles.block}>
         <div className={styles.textBlock}>
@@ -72,6 +69,6 @@ function App() {
       </div>
     </div>
   );
-}
+};
 
 export default App;

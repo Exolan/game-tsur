@@ -5,6 +5,9 @@
   transform-style: preserve-3d;
   transform-origin: center right;
   transition: all 1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .card.is-flipped {

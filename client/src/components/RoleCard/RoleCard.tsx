@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { socket } from "../../socket";
 
 import styles from "./RoleCard.module.css";
 
-function RoleCard({ roleKey, roleData, roleSelect, setRoleSelect }) {
+import { RoleCardProps } from "../../interfaces";
+
+const RoleCard: React.FC<RoleCardProps> = ({
+  roleKey,
+  roleGameData,
+  roleSelect,
+  setRoleSelect,
+  socket,
+}) => {
   const [classList, setClassList] = useState(styles.card);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
   function handleClick() {
-    if (roleSelect || roleData.isSelect) return;
+    if (roleSelect || roleGameData.isSelect) return;
 
     setIsFlipped(true);
     setRoleSelect(roleKey);
@@ -18,13 +25,13 @@ function RoleCard({ roleKey, roleData, roleSelect, setRoleSelect }) {
   useEffect(() => {
     const newClassList = `${styles.card} ${
       isFlipped ? styles["is-flipped"] : ""
-    } ${roleData.isSelect || roleSelect ? styles["is-selected"] : ""}`;
+    } ${roleGameData.isSelect || roleSelect ? styles["is-selected"] : ""}`;
 
     setClassList(newClassList);
-  }, [roleData.isSelect, roleSelect]);
+  }, [roleGameData.isSelect, roleSelect]);
 
   return (
-    <div className={classList} onClick={() => handleClick()}>
+    <button className={classList} onClick={() => handleClick()} key={roleKey}>
       <div className={styles.cardBack}>
         <div className={styles.cardBlockImg}>
           <svg
@@ -77,14 +84,14 @@ function RoleCard({ roleKey, roleData, roleSelect, setRoleSelect }) {
       </div>
       <div className={styles.cardFace}>
         <div className={styles.cardBlockImg}>
-          <img src={roleData.image} className={styles.cardImg} />
+          <img src={roleGameData.image} className={styles.cardImg} alt="" />
         </div>
         <div className={styles.cardBlockText}>
-          <p className={styles.cardText}>{roleData.displayName}</p>
+          <p className={styles.cardText}>{roleGameData.displayName}</p>
         </div>
       </div>
-    </div>
+    </button>
   );
-}
+};
 
 export default RoleCard;

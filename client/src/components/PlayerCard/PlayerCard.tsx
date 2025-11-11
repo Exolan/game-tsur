@@ -1,21 +1,31 @@
+import React from "react";
 import styles from "./PlayerCard.module.css";
 
-function PlayerCard({ isReady }) {
+interface PlayerCardProps {
+  key: number;
+  isReady: boolean;
+}
+
+const PlayerCard: React.FC<PlayerCardProps> = ({ key, isReady }) => {
   const statusClass = isReady ? styles.ready : styles.notReady;
 
   return (
-    <div className={`${styles.card} ${statusClass}`}>
+    <div className={`${styles.card} ${statusClass}`} key={key}>
       <div className={styles.imgBlock}>
         {isReady ? (
-          <img src="/images/player-ready.png" className={styles.imgPlayer} />
+          <img
+            src="/images/player-ready.png"
+            className={styles.imgPlayer}
+            alt=""
+          />
         ) : (
-          <img src="/images/player.png" className={styles.imgPlayer} />
+          <img src="/images/player.png" className={styles.imgPlayer} alt="" />
         )}
       </div>
       {isReady ? (
         <div className={styles.statusBlock}>
           <div className={styles.statusImgBlock}>
-            <img src="/images/ready.png" className={styles.imgStatus} />
+            <img src="/images/ready.png" className={styles.imgStatus} alt="" />
           </div>
           <div className={styles.statusText}>
             <p className={styles.text}>готов</p>
@@ -24,7 +34,11 @@ function PlayerCard({ isReady }) {
       ) : (
         <div className={styles.statusBlock}>
           <div className={styles.statusImgBlock}>
-            <img src="/images/not-ready.png" className={styles.imgStatus} />
+            <img
+              src="/images/not-ready.png"
+              className={styles.imgStatus}
+              alt=""
+            />
           </div>
           <div className={styles.statusText}>
             <p className={styles.text}>не готов</p>
@@ -33,6 +47,6 @@ function PlayerCard({ isReady }) {
       )}
     </div>
   );
-}
+};
 
 export default PlayerCard;

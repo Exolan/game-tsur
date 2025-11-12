@@ -2,15 +2,15 @@ import React from "react";
 import styles from "./PlayerCard.module.css";
 
 interface PlayerCardProps {
-  key: number;
+  playerId: number;
   isReady: boolean;
 }
 
-const PlayerCard: React.FC<PlayerCardProps> = ({ key, isReady }) => {
+const PlayerCard: React.FC<PlayerCardProps> = ({ playerId, isReady }) => {
   const statusClass = isReady ? styles.ready : styles.notReady;
 
   return (
-    <div className={`${styles.card} ${statusClass}`} key={key}>
+    <div className={`${styles.card} ${statusClass}`} key={playerId}>
       <div className={styles.imgBlock}>
         {isReady ? (
           <img

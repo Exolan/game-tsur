@@ -15,7 +15,11 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
         const player = players[i];
         cells.push(
           <div className={styles.socket} key={i}>
-            <PlayerCard key={i} isReady={player.playerData?.isReady} />
+            <PlayerCard
+              key={i}
+              playerId={i}
+              isReady={player.playerData?.isReady}
+            />
           </div>
         );
         continue;
@@ -35,6 +39,8 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
     function handleLobbyUpdate(players: Player[]) {
       setPlayers(players);
     }
+
+    localStorage.setItem("gamePhase", "lobby");
 
     socket.on("lobbyUpdate", handleLobbyUpdate);
 

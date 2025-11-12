@@ -31,14 +31,12 @@ const io = new Server(httpServer, {
 let gameSession = new GameSession();
 let { players, roles, gamePhase } = gameSession.getData();
 
-// Только для production будем раздавать статику
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));
   app.get("*", function (req, res) {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
 } else {
-  // Для разработки просто тестовый endpoint
   app.get("/", (req, res) => {
     res.json({
       message: "Socket.io server is running. Use React dev server on port 3000",
@@ -51,6 +49,11 @@ io.on("connection", (socket) => {
     players.set(socket.id, { role: null, isReady: false });
 
     io.emit("lobbyUpdate", getPlayersArray());
+  });
+
+  socket.on("getGameState", () => {
+    const gameState = gamePhase;
+    socket.emit("gameState", gameState);
   });
 
   socket.on("playerIsReady", () => {
@@ -102,20 +105,24 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Пользователь отключился");
     const player = players.get(socket.id);
 
-    if (player && player.role) {
-      const role = roles.get(player.role);
-      if (role) {
-        role.isSelect = false;
-      }
-    }
-    players.delete(socket.id);
-    io.emit("backToLobby", getPlayersArray());
+    if (player) {
+      if (gamePhase !== "game") {
+        if (player.role) {
+          const role = roles.get(player.role);
+          if (role) {
+            role.isSelect = false;
+          }
+        }
 
-    io.emit("lobbyUpdate", getPlayersArray());
-    io.emit("cardsUpdate", getRolesArray());
+        gameSession.resetAllRoles();
+        io.emit("backToLobby");
+      }
+
+      players.delete(socket.id);
+      io.emit("cardsUpdate", getRolesArray());
+    }
   });
 });
 

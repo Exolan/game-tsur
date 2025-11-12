@@ -203,6 +203,12 @@ class GameSession {
       }
     }
   }
+
+  resetAllRoles() {
+    this.roles.forEach((roleData, roleKey) => {
+      roleData.isSelect = false;
+    });
+  }
 }
 
 module.exports = GameSession;

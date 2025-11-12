@@ -23,6 +23,12 @@ const Game: React.FC<GameProps> = ({ socket }) => {
   }
 
   useEffect(() => {
+    socket.emit("getGameState");
+
+    function handleGameState(currentGamePhase: Phase) {
+      setGamePhase(currentGamePhase);
+    }
+
     function handleGameCards(roles: Role[]) {
       setGamePhase("gameCards");
       setRoles(roles);
@@ -30,17 +36,23 @@ const Game: React.FC<GameProps> = ({ socket }) => {
 
     function handleStartGame(userData: Role) {
       setGamePhase("game");
-
-      console.log(userData);
       setUserRoleData(userData);
     }
 
+    function handleBackToLobby() {
+      setGamePhase("lobby");
+    }
+
+    socket.on("gameState", handleGameState);
     socket.on("gameCards", handleGameCards);
     socket.on("startGame", handleStartGame);
+    socket.on("backToLobby", handleBackToLobby);
 
     return () => {
+      socket.off("gameState", handleGameState);
       socket.off("gameCards", handleGameCards);
       socket.off("startGame", handleStartGame);
+      socket.off("backToLobby", handleBackToLobby);
     };
   }, []);
 

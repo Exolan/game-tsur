@@ -5,17 +5,21 @@ const path = require("node:path");
 const GameSession = require("./gameSession.js");
 
 function getPlayersArray() {
-  return Array.from(players.entries()).map(([playerSocket, playerData]) => ({
-    playerSocket,
-    playerData,
-  }));
+  return Array.from(gameSession.players.entries()).map(
+    ([playerSocket, playerData]) => ({
+      playerSocket,
+      playerData,
+    })
+  );
 }
 
 function getRolesArray() {
-  return Array.from(roles.entries()).map(([roleKey, roleGameData]) => ({
-    roleKey,
-    roleGameData,
-  }));
+  return Array.from(gameSession.roles.entries()).map(
+    ([roleKey, roleGameData]) => ({
+      roleKey,
+      roleGameData,
+    })
+  );
 }
 
 const app = express();
@@ -29,7 +33,6 @@ const io = new Server(httpServer, {
 });
 
 let gameSession = new GameSession();
-let { players, roles, gamePhase } = gameSession.getData();
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../client/build")));
@@ -46,18 +49,27 @@ if (process.env.NODE_ENV === "production") {
 
 io.on("connection", (socket) => {
   socket.on("playerConnect", () => {
-    players.set(socket.id, { role: null, isReady: false });
+    gameSession.players.set(socket.id, { role: null, isReady: false });
 
     io.emit("lobbyUpdate", getPlayersArray());
   });
 
-  socket.on("getGameState", () => {
-    const gameState = gamePhase;
-    socket.emit("gameState", gameState);
+  socket.on("getGameState", (roleKey = null) => {
+    if (gameSession.gamePhase === "game") {
+      if (roleKey !== null) {
+        const player = gameSession.players.get(socket.id);
+        const role = gameSession.roles.get(roleKey);
+
+        if (role) {
+          player.role = roleKey;
+        }
+      }
+    }
+    socket.emit("gameState", gameSession.gamePhase);
   });
 
   socket.on("playerIsReady", () => {
-    const player = players.get(socket.id);
+    const player = gameSession.players.get(socket.id);
     if (player) {
       player.isReady = true;
     }
@@ -70,9 +82,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("selectRole", (roleKey) => {
-    const player = players.get(socket.id);
+    const player = gameSession.players.get(socket.id);
     if (player) {
-      const role = roles.get(roleKey);
+      const role = gameSession.roles.get(roleKey);
       if (role) {
         role.isSelect = true;
         player.role = roleKey;
@@ -105,12 +117,12 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    const player = players.get(socket.id);
+    const player = gameSession.players.get(socket.id);
 
     if (player) {
-      if (gamePhase !== "game") {
+      if (gameSession.gamePhase !== "game") {
         if (player.role) {
-          const role = roles.get(player.role);
+          const role = gameSession.roles.get(player.role);
           if (role) {
             role.isSelect = false;
           }
@@ -120,7 +132,7 @@ io.on("connection", (socket) => {
         io.emit("backToLobby");
       }
 
-      players.delete(socket.id);
+      gameSession.players.delete(socket.id);
       io.emit("cardsUpdate", getRolesArray());
     }
   });

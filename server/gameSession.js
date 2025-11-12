@@ -134,13 +134,11 @@ class GameSession {
   }
 
   getPlayerByRole(role) {
-    // Проверяем существование роли
     if (!this.roles.has(role)) {
       console.error("Роль", role, "не существует");
       return null;
     }
 
-    // Ищем игрока с нужной ролью
     for (const [playerID, playerData] of this.players.entries()) {
       if (playerData.role === role) {
         console.log("Найден", role, "с ID:", playerID);

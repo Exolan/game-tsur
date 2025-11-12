@@ -40,8 +40,6 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
       setPlayers(players);
     }
 
-    localStorage.setItem("gamePhase", "lobby");
-
     socket.on("lobbyUpdate", handleLobbyUpdate);
 
     socket.emit("getLobbyState");

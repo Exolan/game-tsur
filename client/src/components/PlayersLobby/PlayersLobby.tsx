@@ -13,13 +13,10 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
     for (let i = 0; i < 10; i++) {
       if (players.length > i && players[i]) {
         const player = players[i];
+        console.log(player);
         cells.push(
           <div className={styles.socket} key={i}>
-            <PlayerCard
-              key={i}
-              playerId={i}
-              isReady={player.playerData?.isReady}
-            />
+            <PlayerCard key={i} playerId={i} isReady={player.isReady} />
           </div>
         );
         continue;
@@ -30,22 +27,22 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
     return cells;
   }, [players]);
 
-  function handleReady() {
+  function onReady() {
     setIsReady(true);
-    socket.emit("playerIsReady");
+    socket.emit("playerReady");
   }
 
   useEffect(() => {
-    function handleLobbyUpdate(players: Player[]) {
+    function onLobbyUpdate(players: Player[]) {
       setPlayers(players);
     }
 
-    socket.on("lobbyUpdate", handleLobbyUpdate);
+    socket.on("lobbyUpdate", onLobbyUpdate);
 
     socket.emit("getLobbyState");
 
     return () => {
-      socket.off("lobbyUpdate", handleLobbyUpdate);
+      socket.off("lobbyUpdate", onLobbyUpdate);
     };
   }, []);
 
@@ -69,7 +66,7 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
               <h4 className={styles.waitingText}>ожидайте остальных игроков</h4>
             </div>
           ) : (
-            <button onClick={handleReady} className={styles.button}>
+            <button onClick={onReady} className={styles.button}>
               <h4 className={styles.buttonText}>готов</h4>
             </button>
           )}

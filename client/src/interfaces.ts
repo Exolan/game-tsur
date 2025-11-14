@@ -30,8 +30,8 @@ export interface UserGameData {
 }
 
 export interface Player {
-  playerSocket: string;
-  playerData: UserGameData;
+  role: string | null;
+  isReady: boolean;
 }
 
 export interface GameProps {

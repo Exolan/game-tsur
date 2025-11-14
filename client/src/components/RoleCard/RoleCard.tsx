@@ -28,7 +28,7 @@ const RoleCard: React.FC<RoleCardProps> = ({
     } ${roleGameData.isSelect || roleSelect ? styles["is-selected"] : ""}`;
 
     setClassList(newClassList);
-  }, [roleGameData.isSelect, roleSelect]);
+  }, [isFlipped, roleGameData.isSelect, roleSelect]);
 
   return (
     <button className={classList} onClick={() => handleClick()} key={roleKey}>

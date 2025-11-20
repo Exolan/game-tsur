@@ -1,14 +1,14 @@
-import { GameSession } from "src/models/GameSession";
+import { Game } from "src/models/Game";
 import { Logger } from "../utils/logger";
 import { Server, Socket } from "socket.io";
 
 export class SocketHandlers {
   private readonly io: Server;
-  private readonly gameSession: GameSession;
+  private readonly game: Game;
 
-  constructor(io: Server, gameSession: GameSession) {
+  constructor(io: Server, game: Game) {
     this.io = io;
-    this.gameSession = gameSession;
+    this.game = game;
   }
 
   public setupAllHandlers(socket: Socket): void {
@@ -26,27 +26,24 @@ export class SocketHandlers {
   }
 
   private emitLobbyUpdate(): void {
-    this.io.emit("lobbyUpdate", this.gameSession.getAllPlayers());
+    this.io.emit("lobbyUpdate", this.game.getAllPlayers());
   }
 
   private emitCardsUpdate(): void {
-    this.io.emit("cardsUpdate", this.gameSession.getAllRoles());
+    this.io.emit("cardsUpdate", this.game.getAllRoles());
   }
 
   private onPlayerConnect(socket: Socket): void {
     socket.on("playerConnect", () => {
       try {
-        if (this.gameSession.players.has(socket.id)) {
+        if (this.game.getPlayerBySocket(socket.id)) {
           return;
         }
 
-        this.gameSession.players.set(socket.id, {
-          isReady: false,
-          isSelect: false,
-        });
+        this.game.createPlayer(socket.id);
 
         Logger.info(`Игрок подключился: ${socket.id}`, {
-          totalPlayers: this.gameSession.players.size,
+          totalPlayers: this.game.players.length,
         });
 
         this.emitLobbyUpdate();
@@ -61,7 +58,7 @@ export class SocketHandlers {
   private onPlayerReady(socket: Socket): void {
     socket.on("playerReady", () => {
       try {
-        const player = this.gameSession.players.get(socket.id);
+        const player = this.game.getPlayerBySocket(socket.id);
         if (!player) {
           return;
         }
@@ -73,7 +70,7 @@ export class SocketHandlers {
         });
 
         this.emitLobbyUpdate();
-        this.gameSession.checkAllPlayersReady(this.io);
+        this.game.checkAllPlayersReady(this.io);
       } catch (error) {
         Logger.error("Ошибка готовности игрока", error, {
           socketId: socket.id,
@@ -85,12 +82,12 @@ export class SocketHandlers {
   private onSelectRole(socket: Socket): void {
     socket.on("selectRole", (roleKey: string) => {
       try {
-        const player = this.gameSession.players.get(socket.id);
+        const player = this.game.getPlayerBySocket(socket.id);
         if (!player) {
           return;
         }
 
-        const role = this.gameSession.roles.get(roleKey);
+        const role = player.playerRole;
         if (role) {
           role.playerId = socket.id;
           player.isSelect = true;
@@ -102,7 +99,7 @@ export class SocketHandlers {
         });
 
         this.emitCardsUpdate();
-        this.gameSession.checkAllRolesSelected(this.io);
+        this.game.checkAllRolesSelected(this.io);
       } catch (error) {
         Logger.error("Ошибка выбора роли", error, {
           socketId: socket.id,
@@ -118,15 +115,15 @@ export class SocketHandlers {
   private onGetGameState(socket: Socket): void {
     socket.on("getGameState", (roleKey: string) => {
       try {
-        if (this.gameSession.gamePhase === "game") {
+        if (this.game.gamePhase === "game") {
           if (roleKey !== null) {
-            const player = this.gameSession.players.get(socket.id);
+            const player = this.game.players.get(socket.id);
 
             if (!player) {
               return;
             }
 
-            const role = this.gameSession.roles.get(roleKey);
+            const role = this.game.roles.get(roleKey);
 
             if (role) {
               Logger.info(`Игрок ${socket.id} переподключился`);
@@ -137,7 +134,7 @@ export class SocketHandlers {
           }
         }
 
-        socket.emit("gameState", this.gameSession.gamePhase);
+        socket.emit("gameState", this.game.gamePhase);
       } catch (error) {
         Logger.error(`Игрок ${socket.id} не смог получить фазу игры`, error, {
           socketId: socket.id,
@@ -153,12 +150,12 @@ export class SocketHandlers {
           return;
         }
 
-        const roles = this.gameSession.roles;
+        const roles = this.game.roles;
         if (!roles) {
           return;
         }
 
-        const event = this.gameSession.activateEvent(eventKey, socket.id);
+        const event = this.game.activateEvent(eventKey, socket.id);
         if (!event) {
           return;
         }
@@ -188,15 +185,15 @@ export class SocketHandlers {
     socket.on("disconnect", (reason: string) => {
       Logger.info("Игрок отключился", { socketId: socket.id, reason });
 
-      const player = this.gameSession.players.get(socket.id);
+      const player = this.game.players.get(socket.id);
       if (player) {
-        if (this.gameSession.gamePhase !== "game") {
-          this.gameSession.resetAllReadys();
-          this.gameSession.resetAllRoles();
-          this.gameSession.resetAllSelects();
+        if (this.game.gamePhase !== "game") {
+          this.game.resetAllReadys();
+          this.game.resetAllRoles();
+          this.game.resetAllSelects();
           this.io.emit("backToLobby");
         }
-        this.gameSession.players.delete(socket.id);
+        this.game.players.delete(socket.id);
         this.emitLobbyUpdate();
       }
     });

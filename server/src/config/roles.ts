@@ -1,6 +1,6 @@
-import { Role } from "../types";
+import { Role } from "../types/types";
 
-const rolesConfig: { [key: string]: Omit<Role, "playerId"> } = {
+const rolesConfig: { [key: string]: Role } = {
   therapist: {
     displayName: "Доктор Шарп\nтерапевт",
     number: "+7 (111) 111-11-11",
@@ -11,9 +11,6 @@ const rolesConfig: { [key: string]: Omit<Role, "playerId"> } = {
       "Хирург с невероятной точностью. Диагностирует болезни по малейшим симптомам.",
     image: "/images/therapist.png",
     buttons: [],
-    listenEvents: ["visit-therapist"],
-    activeEvents: null,
-    maxInstances: 1,
   },
 
   receptionist: {
@@ -26,9 +23,18 @@ const rolesConfig: { [key: string]: Omit<Role, "playerId"> } = {
     task: "Ваша цель — обеспечить бесперебойную работу регистратуры в условиях многозадачности. Вы должны выполнить плановую работу, параллельно реагируя на срочные входящие события: телефонные звонки и живое общение с посетителями.",
     image: "/images/receptionist.png",
     buttons: [],
-    listenEvents: [],
-    activeEvents: null,
-    maxInstances: 1,
+  },
+
+  specialist: {
+    displayName: "Отоларинголог Рефлекторова\nспециалист",
+    number: "+7 (444) 444-44-44",
+    password: "Reflect",
+    profile: "",
+    task: "",
+    description:
+      "Гений медицинских технологий. Создает инновационные методы лечения.",
+    image: "/images/specialist.png",
+    buttons: [],
   },
 
   patient: {
@@ -38,6 +44,7 @@ const rolesConfig: { [key: string]: Omit<Role, "playerId"> } = {
     task: "Ваша цель — пройти диагностику и получить лечение, а именно льготный препарат Плацебо-Фильтр.",
     description:
       "Ваша жизнь — это идеальные кадры, безупречные ракурсы и тонны фильтров. Но однажды вы осознаете, что больше не можете видеть реальность без цифровой обработки.",
+    condition: '"Не вижу себя в зеркале без фотошоп-фильтров"',
     number: "+7 (333) 333-33-33",
     password: "Margo",
     image: "/images/patient.png",
@@ -88,24 +95,6 @@ const rolesConfig: { [key: string]: Omit<Role, "playerId"> } = {
         isActive: true,
       },
     ],
-    listenEvents: [],
-    activeEvents: null,
-    maxInstances: 1,
-  },
-
-  specialist: {
-    displayName: "Отоларинголог Рефлекторова\nспециалист",
-    number: "+7 (444) 444-44-44",
-    password: "Reflect",
-    profile: "",
-    task: "",
-    description:
-      "Гений медицинских технологий. Создает инновационные методы лечения.",
-    image: "/images/specialist.png",
-    buttons: [],
-    listenEvents: [],
-    activeEvents: null,
-    maxInstances: 1,
   },
 };
 

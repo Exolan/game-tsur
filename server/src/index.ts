@@ -2,14 +2,14 @@ import express from "express";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import path from "node:path";
-import { GameSession } from "./models/GameSession";
+import { Game } from "./models/Game";
 import { SocketHandlers } from "./handlers/SocketHandlers";
 
 class GameServer {
   private readonly app: express.Application;
   private readonly io: Server;
   private readonly httpServer: any;
-  private readonly gameSession: GameSession;
+  private readonly game: Game;
   private readonly socketHandlers: SocketHandlers;
 
   constructor() {
@@ -22,8 +22,8 @@ class GameServer {
       },
     });
 
-    this.gameSession = new GameSession();
-    this.socketHandlers = new SocketHandlers(this.io, this.gameSession);
+    this.game = new Game();
+    this.socketHandlers = new SocketHandlers(this.io, this.game);
 
     this.setupServer();
   }
@@ -41,8 +41,8 @@ class GameServer {
       this.app.get("/", (req, res) => {
         res.json({
           message: "Игровой сервер запущен",
-          players: this.gameSession.players.size,
-          phase: this.gameSession.gamePhase,
+          players: this.game.players.length,
+          state: this.game.gameState,
         });
       });
     }
@@ -50,8 +50,8 @@ class GameServer {
     this.app.get("/health", (req, res) => {
       res.json({
         status: "ok",
-        players: this.gameSession.players.size,
-        phase: this.gameSession.gamePhase,
+        players: this.game.players.length,
+        state: this.game.gameState,
       });
     });
 

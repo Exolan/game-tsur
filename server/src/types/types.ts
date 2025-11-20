@@ -1,21 +1,20 @@
 export interface Player {
+  playerId: number;
   isReady: boolean;
-  isSelect: boolean;
+  playerSocket: string;
+  playerRole: { [roleKey: string]: Role } | null;
 }
 
 export interface Role {
-  playerId: string | null;
   displayName: string;
   number: string;
   password: string;
   profile: string;
   task: string;
   description: string;
+  condition?: string;
   image: string;
   buttons: Button[];
-  listenEvents: string[];
-  activeEvents: Map<string, GameEvent[]> | null;
-  maxInstances?: number;
 }
 
 export interface Button {
@@ -44,6 +43,6 @@ export interface EventData {
   buttons: EventButton[];
 }
 
-export type GamePhase = "lobby" | "gameCards" | "game";
+export type GameState = "lobby" | "cards" | "game";
 
 export type EventType = "call" | "message";

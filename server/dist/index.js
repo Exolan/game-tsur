@@ -7,7 +7,7 @@ var express_1 = __importDefault(require("express"));
 var socket_io_1 = require("socket.io");
 var node_http_1 = require("node:http");
 var node_path_1 = __importDefault(require("node:path"));
-var GameSession_1 = require("./models/GameSession");
+var Game_1 = require("./models/Game");
 var SocketHandlers_1 = require("./handlers/SocketHandlers");
 var GameServer = /** @class */ (function () {
     function GameServer() {
@@ -19,8 +19,8 @@ var GameServer = /** @class */ (function () {
                 methods: ["GET", "POST"],
             },
         });
-        this.gameSession = new GameSession_1.GameSession();
-        this.socketHandlers = new SocketHandlers_1.SocketHandlers(this.io, this.gameSession);
+        this.game = new Game_1.Game();
+        this.socketHandlers = new SocketHandlers_1.SocketHandlers(this.io, this.game);
         this.setupServer();
     }
     GameServer.prototype.setupServer = function () {
@@ -37,16 +37,16 @@ var GameServer = /** @class */ (function () {
             this.app.get("/", function (req, res) {
                 res.json({
                     message: "Игровой сервер запущен",
-                    players: _this.gameSession.players.size,
-                    phase: _this.gameSession.gamePhase,
+                    players: _this.game.players.length,
+                    state: _this.game.gameState,
                 });
             });
         }
         this.app.get("/health", function (req, res) {
             res.json({
                 status: "ok",
-                players: _this.gameSession.players.size,
-                phase: _this.gameSession.gamePhase,
+                players: _this.game.players.length,
+                state: _this.game.gameState,
             });
         });
         this.io.on("connection", function (socket) {

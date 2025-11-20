@@ -8,7 +8,7 @@ export interface Buttons {
 }
 
 export interface RoleGameData {
-  isSelect: boolean;
+  playerId: string | null;
   displayName: string;
   number: string;
   password: string;
@@ -17,6 +17,8 @@ export interface RoleGameData {
   description: string;
   image: string;
   buttons: Buttons[];
+  events: string[];
+  maxInstances?: number;
 }
 
 export interface Role {
@@ -30,7 +32,8 @@ export interface UserGameData {
 }
 
 export interface Player {
-  role: string | null;
+  id: string;
+  isSelect: boolean;
   isReady: boolean;
 }
 
@@ -46,18 +49,23 @@ export interface GameBoardProps extends GameProps {
   userRoleData: Role | null;
 }
 
-export interface EventButton {
-  id: number;
-  textButton: string;
-  actionButton: string;
+export interface EventData {
+  text: string;
+  buttons: EventButton[];
 }
 
-export interface ObjectEvent {
-  playerSocket: string;
-  textEvent: string;
-  pageEvent: string;
-  typeEvent: string;
-  buttonsEvent: EventButton[];
+export interface EventButton {
+  id: number;
+  text: string;
+  action: string;
+}
+
+export interface GameEvent {
+  type: EventType;
+  from: string | null;
+  to: string | null;
+  data: EventData[];
+  step: number;
 }
 
 export interface RoleCardProps {
@@ -67,3 +75,5 @@ export interface RoleCardProps {
   setRoleSelect: React.Dispatch<React.SetStateAction<string | null>>;
   socket: Socket;
 }
+
+export type EventType = "call" | "message";

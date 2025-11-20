@@ -10,6 +10,7 @@ var rolesConfig = {
         description: "Хирург с невероятной точностью. Диагностирует болезни по малейшим симптомам.",
         image: "/images/therapist.png",
         buttons: [],
+        events: ["visit-therapist"],
         maxInstances: 1,
     },
     receptionist: {
@@ -21,6 +22,7 @@ var rolesConfig = {
         task: "Ваша цель — обеспечить бесперебойную работу регистратуры в условиях многозадачности. Вы должны выполнить плановую работу, параллельно реагируя на срочные входящие события: телефонные звонки и живое общение с посетителями.",
         image: "/images/receptionist.png",
         buttons: [],
+        events: [],
         maxInstances: 1,
     },
     patient: {
@@ -75,6 +77,7 @@ var rolesConfig = {
                 isActive: true,
             },
         ],
+        events: [],
         maxInstances: 1,
     },
     specialist: {
@@ -86,6 +89,7 @@ var rolesConfig = {
         description: "Гений медицинских технологий. Создает инновационные методы лечения.",
         image: "/images/specialist.png",
         buttons: [],
+        events: [],
         maxInstances: 1,
     },
 };

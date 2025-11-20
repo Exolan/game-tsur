@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import styles from "./GameBoard.module.css";
-import { GameBoardProps, ObjectEvent } from "../../interfaces";
+import { GameBoardProps, GameEvent } from "../../types";
 
 const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
-  const [modalData, setModalData] = useState<ObjectEvent | null>(null);
+  const [modalData, setModalData] = useState<GameEvent | null>(null);
+  const [isEventModal, setIsEventModal] = useState<boolean>(false);
   const [isActionsModal, setIsActionsModal] = useState<boolean>(false);
 
-  function handleEmit(action: string, playerSocket: string | null) {
-    if (playerSocket) {
-      console.log(`Создан emit ${action} для игрока ${playerSocket}`);
-      socket.emit(action, playerSocket);
-      return;
+  function handleEmit(action: string) {
+    if (isEventModal) {
+      setIsEventModal(false);
+    } else {
+      setIsActionsModal(false);
     }
-    socket.emit(action);
+    socket.emit("activateEvent", action);
   }
 
   function onOpen() {
@@ -23,39 +24,46 @@ const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
     setIsActionsModal(false);
   }
 
-  function handleNewModal(objectEvent: ObjectEvent) {
-    setModalData(objectEvent);
+  function handleModalData(eventData: GameEvent) {
+    setModalData(eventData);
+    setIsEventModal(true);
   }
 
   useEffect(() => {
-    if (userRoleData?.roleKey === "therapist") {
-      socket.on("new-patient", handleNewModal);
-    }
+    userRoleData?.roleGameData.events.forEach((eventKey) =>
+      socket.on(eventKey, handleModalData)
+    );
+
     return () => {
-      if (userRoleData?.roleKey === "therapist") {
-        socket.off("new-patient", handleNewModal);
-      }
+      userRoleData?.roleGameData.events.forEach((eventKey) =>
+        socket.off(eventKey, handleModalData)
+      );
     };
   }, []);
 
   return (
     <div className={styles.conteiner}>
-      {modalData && (
+      {isEventModal && (
         <div className={styles.modal}>
-          <p>{modalData.textEvent}</p>
-          <div className={styles.modalButtons}>
-            {modalData.buttonsEvent.map((button) => {
-              return (
-                <button
-                  key={button.id}
-                  onClick={() => {
-                    handleEmit(button.actionButton, modalData.playerSocket);
-                  }}
-                >
-                  {button.textButton}
-                </button>
-              );
-            })}
+          <div className={styles.modalBox}>
+            <div className={styles.modalHeader}>
+              <h2>{modalData?.data[modalData.step].text}</h2>
+            </div>
+            <div className={styles.modalButtons}>
+              {modalData?.data[modalData.step].buttons.map((button) => {
+                return (
+                  <button
+                    key={button.id}
+                    className={styles.button}
+                    onClick={() => {
+                      handleEmit(button.action);
+                    }}
+                  >
+                    {button.text}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
@@ -77,7 +85,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
                     <button
                       key={button.id}
                       onClick={() => {
-                        handleEmit(button.action, null);
+                        handleEmit(button.action);
                       }}
                       className={styles.button}
                     >

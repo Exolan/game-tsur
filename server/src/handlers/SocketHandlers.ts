@@ -18,6 +18,7 @@ export class SocketHandlers {
     this.onPlayerDisconnect(socket);
     this.onSelectRole(socket);
     this.onGetGameState(socket);
+    this.onActivateEvent(socket);
 
     socket.on("error", (error: any) => {
       Logger.error(`Socket error for ${socket.id}`, error);
@@ -40,8 +41,8 @@ export class SocketHandlers {
         }
 
         this.gameSession.players.set(socket.id, {
-          role: null,
           isReady: false,
+          isSelect: false,
         });
 
         Logger.info(`Игрок подключился: ${socket.id}`, {
@@ -69,7 +70,6 @@ export class SocketHandlers {
 
         Logger.info("Игрок готов", {
           socketId: socket.id,
-          role: player.role,
         });
 
         this.emitLobbyUpdate();
@@ -92,13 +92,13 @@ export class SocketHandlers {
 
         const role = this.gameSession.roles.get(roleKey);
         if (role) {
-          role.isSelect = true;
-          player.role = roleKey;
+          role.playerId = socket.id;
+          player.isSelect = true;
         }
 
         Logger.info(`Ирок ${socket.id} выбрал роль ${roleKey}`, {
           socketId: socket.id,
-          role: player.role,
+          role: roleKey,
         });
 
         this.emitCardsUpdate();
@@ -131,7 +131,8 @@ export class SocketHandlers {
             if (role) {
               Logger.info(`Игрок ${socket.id} переподключился`);
               player.isReady = true;
-              player.role = roleKey;
+              player.isSelect = true;
+              role.playerId = socket.id;
             }
           }
         }
@@ -139,6 +140,44 @@ export class SocketHandlers {
         socket.emit("gameState", this.gameSession.gamePhase);
       } catch (error) {
         Logger.error(`Игрок ${socket.id} не смог получить фазу игры`, error, {
+          socketId: socket.id,
+        });
+      }
+    });
+  }
+
+  private onActivateEvent(socket: Socket): void {
+    socket.on("activateEvent", (eventKey: string) => {
+      try {
+        if (!eventKey) {
+          return;
+        }
+
+        const roles = this.gameSession.roles;
+        if (!roles) {
+          return;
+        }
+
+        const event = this.gameSession.activateEvent(eventKey, socket.id);
+        if (!event) {
+          return;
+        }
+
+        if (!event.eventData.to) {
+          return;
+        }
+
+        Logger.info(
+          `Игрок ${socket.id} активировал событие ${event.eventKey}`,
+          {
+            eventKey: event.eventKey,
+            eventData: event.eventData,
+          }
+        );
+
+        this.io.to(event.eventData.to).emit(event.eventKey, event.eventData);
+      } catch (error) {
+        Logger.error(`Ошибка в активации ивента`, error, {
           socketId: socket.id,
         });
       }
@@ -154,6 +193,7 @@ export class SocketHandlers {
         if (this.gameSession.gamePhase !== "game") {
           this.gameSession.resetAllReadys();
           this.gameSession.resetAllRoles();
+          this.gameSession.resetAllSelects();
           this.io.emit("backToLobby");
         }
         this.gameSession.players.delete(socket.id);

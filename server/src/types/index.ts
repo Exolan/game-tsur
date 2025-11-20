@@ -1,10 +1,10 @@
 export interface Player {
-  role: string | null;
   isReady: boolean;
+  isSelect: boolean;
 }
 
 export interface Role {
-  isSelect: boolean;
+  playerId: string | null;
   displayName: string;
   number: string;
   password: string;
@@ -13,6 +13,8 @@ export interface Role {
   description: string;
   image: string;
   buttons: Button[];
+  listenEvents: string[];
+  activeEvents: Map<string, GameEvent[]> | null;
   maxInstances?: number;
 }
 
@@ -24,7 +26,6 @@ export interface Button {
 }
 
 export interface GameEvent {
-  id: number;
   type: EventType;
   from: string | null;
   to: string | null;
@@ -32,9 +33,15 @@ export interface GameEvent {
   step: number;
 }
 
-export interface EventData {
+export interface EventButton {
   id: number;
   text: string;
+  action: string;
+}
+
+export interface EventData {
+  text: string;
+  buttons: EventButton[];
 }
 
 export type GamePhase = "lobby" | "gameCards" | "game";

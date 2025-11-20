@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import styles from "./PlayersLobby.module.css";
 import PlayerCard from "../PlayerCard/PlayerCard";
-import { GameProps, Player } from "../../interfaces";
+import { GameProps, Player } from "../../types";
 
 const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -13,10 +13,9 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
     for (let i = 0; i < 10; i++) {
       if (players.length > i && players[i]) {
         const player = players[i];
-        console.log(player);
         cells.push(
-          <div className={styles.socket} key={i}>
-            <PlayerCard key={i} playerId={i} isReady={player.isReady} />
+          <div className={styles.socket} key={player.id}>
+            <PlayerCard key={player.id} playerId={i} isReady={player.isReady} />
           </div>
         );
         continue;
@@ -33,7 +32,9 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
   }
 
   useEffect(() => {
+    console.log("Обновление страницы");
     function onLobbyUpdate(players: Player[]) {
+      console.log(players);
       setPlayers(players);
     }
 

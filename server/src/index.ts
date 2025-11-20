@@ -6,11 +6,11 @@ import { GameSession } from "./models/GameSession";
 import { SocketHandlers } from "./handlers/SocketHandlers";
 
 class GameServer {
-  private app: express.Application;
-  private io: Server;
-  private httpServer: any;
-  private gameSession: GameSession;
-  private socketHandlers: SocketHandlers;
+  private readonly app: express.Application;
+  private readonly io: Server;
+  private readonly httpServer: any;
+  private readonly gameSession: GameSession;
+  private readonly socketHandlers: SocketHandlers;
 
   constructor() {
     this.app = express();

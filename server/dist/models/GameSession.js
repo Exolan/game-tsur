@@ -24,12 +24,58 @@ var GameSession = /** @class */ (function () {
         this.gamePhase = "lobby";
         this.minPlayers = 4;
         this.maxPlayers = 10;
+        this.events = new Map();
     }
+    GameSession.prototype.activateEvent = function (eventKey, playerId) {
+        var eventData = this.events.get(eventKey);
+        if (!eventData) {
+            return null;
+        }
+        eventData.from = playerId;
+        return { eventKey: eventKey, eventData: eventData };
+    };
+    GameSession.prototype.createEvent = function (eventKey, type, from, to, data) {
+        var event = {
+            type: type,
+            from: from,
+            to: to,
+            data: data,
+            step: 0,
+        };
+        this.events.set(eventKey, event);
+        logger_1.Logger.info("Создан новый ивент", {
+            type: event.type,
+            from: event.from,
+            to: event.to,
+        });
+        return event;
+    };
+    GameSession.prototype.initializeGameEvents = function (roles) {
+        var _a;
+        var therapistId = (_a = roles.get("therapist")) === null || _a === void 0 ? void 0 : _a.playerId;
+        if (therapistId) {
+            this.events.set("visit-therapist", {
+                type: "message",
+                from: null,
+                to: therapistId,
+                data: [
+                    {
+                        text: "К вам пришел пациент",
+                        buttons: [
+                            { id: 1, text: "Принять его", action: "patient-therapist" },
+                            { id: 2, text: "Поставить в очередь", action: "patient" },
+                        ],
+                    },
+                ],
+                step: 0,
+            });
+        }
+    };
     GameSession.prototype.initializeRoles = function () {
         var roles = new Map();
         for (var _i = 0, _a = Object.entries(roles_1.default); _i < _a.length; _i++) {
             var _b = _a[_i], roleKey = _b[0], config = _b[1];
-            roles.set(roleKey, __assign({ isSelect: false }, config));
+            roles.set(roleKey, __assign({ playerId: null }, config));
         }
         return roles;
     };
@@ -48,20 +94,21 @@ var GameSession = /** @class */ (function () {
         }
     };
     GameSession.prototype.checkAllRolesSelected = function (io) {
-        var _this = this;
         var playersCount = this.players.size;
-        var selectedRoles = Array.from(this.roles.values()).filter(function (role) { return role.isSelect; }).length;
+        var selectedRoles = Array.from(this.roles.values()).filter(function (role) { return role.playerId; }).length;
         if (playersCount === selectedRoles && selectedRoles >= this.minPlayers) {
             this.gamePhase = "game";
             logger_1.Logger.info("Все роли выбраны! Запуск игры...");
-            this.players.forEach(function (playerData, playerSocketId) {
-                if (playerData.role !== null) {
-                    io.to(playerSocketId).emit("startGame", {
-                        roleKey: playerData.role,
-                        roleGameData: _this.roles.get(playerData.role),
+            this.initializeGameEvents(this.roles);
+            for (var _i = 0, _a = Array.from(this.roles.entries()); _i < _a.length; _i++) {
+                var _b = _a[_i], roleKey = _b[0], roleGameData = _b[1];
+                if (roleGameData.playerId !== null) {
+                    io.to(roleGameData.playerId).emit("startGame", {
+                        roleKey: roleKey,
+                        roleGameData: roleGameData,
                     });
                 }
-            });
+            }
         }
     };
     GameSession.prototype.getAllPlayers = function () {
@@ -81,7 +128,12 @@ var GameSession = /** @class */ (function () {
     };
     GameSession.prototype.resetAllRoles = function () {
         this.roles.forEach(function (roleData) {
-            roleData.isSelect = false;
+            roleData.playerId = null;
+        });
+    };
+    GameSession.prototype.resetAllSelects = function () {
+        this.players.forEach(function (playerData) {
+            playerData.isSelect = false;
         });
     };
     GameSession.prototype.resetAllReadys = function () {

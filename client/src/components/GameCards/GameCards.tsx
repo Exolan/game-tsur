@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import styles from "./GameCards.module.css";
 import RoleCard from "../RoleCard/RoleCard";
-import { GameCardsProps, Role } from "../../interfaces";
+import { GameCardsProps, Role } from "../../types";
 
 const GameCards: React.FC<GameCardsProps> = ({ roles, socket }) => {
   const [roleSelect, setRoleSelect] = useState<string | null>(null);
@@ -32,12 +32,12 @@ const GameCards: React.FC<GameCardsProps> = ({ roles, socket }) => {
       </header>
       <div className={styles.block}>
         <div className={styles.cards}>
-          {currentRoles.map(({ roleKey, roleGameData }) => {
+          {currentRoles.map((role) => {
             return (
               <RoleCard
-                key={roleKey}
-                roleKey={roleKey}
-                roleGameData={roleGameData}
+                key={role.roleKey}
+                roleKey={role.roleKey}
+                roleGameData={role.roleGameData}
                 roleSelect={roleSelect}
                 setRoleSelect={setRoleSelect}
                 socket={socket}

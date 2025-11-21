@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import styles from "./PlayersLobby.module.css";
 import PlayerCard from "../PlayerCard/PlayerCard";
-import { GameProps, Player } from "../../interfaces";
+import { GameProps, Player } from "../../types";
 
 const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -14,12 +14,8 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
       if (players.length > i && players[i]) {
         const player = players[i];
         cells.push(
-          <div className={styles.socket} key={i}>
-            <PlayerCard
-              key={i}
-              playerId={i}
-              isReady={player.playerData?.isReady}
-            />
+          <div className={styles.socket} key={player.id}>
+            <PlayerCard key={player.id} playerId={i} isReady={player.isReady} />
           </div>
         );
         continue;
@@ -30,22 +26,24 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
     return cells;
   }, [players]);
 
-  function handleReady() {
+  function onReady() {
     setIsReady(true);
-    socket.emit("playerIsReady");
+    socket.emit("playerReady");
   }
 
   useEffect(() => {
-    function handleLobbyUpdate(players: Player[]) {
+    console.log("Обновление страницы");
+    function onLobbyUpdate(players: Player[]) {
+      console.log(players);
       setPlayers(players);
     }
 
-    socket.on("lobbyUpdate", handleLobbyUpdate);
+    socket.on("lobbyUpdate", onLobbyUpdate);
 
     socket.emit("getLobbyState");
 
     return () => {
-      socket.off("lobbyUpdate", handleLobbyUpdate);
+      socket.off("lobbyUpdate", onLobbyUpdate);
     };
   }, []);
 
@@ -69,7 +67,7 @@ const PlayersLobby: React.FC<GameProps> = ({ socket }) => {
               <h4 className={styles.waitingText}>ожидайте остальных игроков</h4>
             </div>
           ) : (
-            <button onClick={handleReady} className={styles.button}>
+            <button onClick={onReady} className={styles.button}>
               <h4 className={styles.buttonText}>готов</h4>
             </button>
           )}

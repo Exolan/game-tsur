@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PlayersLobby from "../PlayersLobby/PlayersLobby";
 import GameCards from "../GameCards/GameCards";
 import GameBoard from "../GameBoard/GameBoard";
-import { GameProps, Role } from "../../interfaces";
+import { GameProps, Role } from "../../types";
 
 type Phase = "lobby" | "gameCards" | "game";
 
@@ -67,14 +67,15 @@ const Game: React.FC<GameProps> = ({ socket }) => {
     }
 
     function handleGameCards(roles: Role[]) {
-      setGamePhase("gameCards");
       setRoles(roles);
+      setGamePhase("gameCards");
     }
 
     function handleStartGame(userData: Role) {
+      console.log(userData);
       uploadLocalStorageData(userData);
-      setGamePhase("game");
       setUserRoleData(userData);
+      setGamePhase("game");
     }
 
     function handleBackToLobby() {

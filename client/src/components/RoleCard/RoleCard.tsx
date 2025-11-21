@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import styles from "./RoleCard.module.css";
 
-import { RoleCardProps } from "../../interfaces";
+import { RoleCardProps } from "../../types";
 
 const RoleCard: React.FC<RoleCardProps> = ({
   roleKey,
@@ -15,7 +15,7 @@ const RoleCard: React.FC<RoleCardProps> = ({
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
   function handleClick() {
-    if (roleSelect || roleGameData.isSelect) return;
+    if (roleSelect || roleGameData.playerId) return;
 
     setIsFlipped(true);
     setRoleSelect(roleKey);
@@ -25,10 +25,10 @@ const RoleCard: React.FC<RoleCardProps> = ({
   useEffect(() => {
     const newClassList = `${styles.card} ${
       isFlipped ? styles["is-flipped"] : ""
-    } ${roleGameData.isSelect || roleSelect ? styles["is-selected"] : ""}`;
+    } ${roleGameData.playerId || roleSelect ? styles["is-selected"] : ""}`;
 
     setClassList(newClassList);
-  }, [roleGameData.isSelect, roleSelect]);
+  }, [isFlipped, roleGameData.playerId, roleSelect]);
 
   return (
     <button className={classList} onClick={() => handleClick()} key={roleKey}>

@@ -48,40 +48,47 @@ class GameSession {
           image: "/images/patient.png",
           buttons: [
             {
+              id: 1,
               action: "chat-bot",
               label: "Записаться на прием к терапевту через чат-бот",
               isActive: true,
             },
             {
+              id: 2,
               action: "cite-registratura",
               label: "Записаться на прием к врачу на сайте «Регистратура»",
               isActive: true,
             },
             {
+              id: 3,
               action: "visit-therapist",
               label:
                 "Посетить терапевта для получения направления к узкому специалисту",
               isActive: true,
             },
             {
+              id: 4,
               action: "visit-registation",
               label:
                 "Обратиться в регистратуру для записи к узкому специалисту ",
               isActive: true,
             },
             {
+              id: 5,
               action: "visit-specialist",
               label:
                 "Посетить узкого специалиста для подтверждения диагноза / необходимость льготного лекарства",
               isActive: true,
             },
             {
+              id: 6,
               action: "call",
               label:
                 "Обратиться в службу 666 чтобы выписали рецепт на льготное лекарство",
               isActive: true,
             },
             {
+              id: 7,
               action: "visit-pharmacy",
               label: "Обратиться в аптеку для получения льготного лекарства",
               isActive: true,
@@ -127,13 +134,11 @@ class GameSession {
   }
 
   getPlayerByRole(role) {
-    // Проверяем существование роли
     if (!this.roles.has(role)) {
       console.error("Роль", role, "не существует");
       return null;
     }
 
-    // Ищем игрока с нужной ролью
     for (const [playerID, playerData] of this.players.entries()) {
       if (playerData.role === role) {
         console.log("Найден", role, "с ID:", playerID);
@@ -160,7 +165,16 @@ class GameSession {
 
     if (allReady) {
       this.gamePhase = "gameCards";
-      io.emit("gameCards", Array.from(this.roles.entries()));
+      const rolesArray = Array.from(this.roles.entries()).map(
+        ([roleKey, roleGameData]) => ({
+          roleKey,
+          roleGameData,
+        })
+      );
+
+      console.log("Sending roles array:", rolesArray);
+
+      io.emit("gameCards", rolesArray);
       allPlayers.forEach((player) => (player.isReady = false));
     }
   }
@@ -171,8 +185,8 @@ class GameSession {
 
     let count = 0;
 
-    for (let i = 0; i < allRoles.length; i++) {
-      if (allRoles[i].isSelect) {
+    for (const element of allRoles) {
+      if (element.isSelect) {
         count++;
       }
 
@@ -180,12 +194,18 @@ class GameSession {
         this.gamePhase = "game";
         this.players.forEach((playerData, playerSocketId) => {
           io.to(playerSocketId).emit("startGame", {
-            role: playerData.role,
-            roleData: this.roles.get(playerData.role),
+            roleKey: playerData.role,
+            roleGameData: this.roles.get(playerData.role),
           });
         });
       }
     }
+  }
+
+  resetAllRoles() {
+    this.roles.forEach((roleData, roleKey) => {
+      roleData.isSelect = false;
+    });
   }
 }
 

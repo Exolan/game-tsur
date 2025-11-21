@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { socket } from "../../socket";
 
 import styles from "./GameCards.module.css";
-import RoleCard from "../RoleCard/RoleCard.js";
+import RoleCard from "../RoleCard/RoleCard";
+import { GameCardsProps, Role } from "../../interfaces";
 
-function GameCards({ roles }) {
-  const [roleSelect, setRoleSelect] = useState(false);
-  const [currentRoles, setCurrentRoles] = useState(roles);
+const GameCards: React.FC<GameCardsProps> = ({ roles, socket }) => {
+  const [roleSelect, setRoleSelect] = useState<string | null>(null);
+  const [currentRoles, setCurrentRoles] = useState<Role[]>(roles);
 
   useEffect(() => {
-    function handleCardsUpdate(data) {
-      setCurrentRoles(data);
+    function handleCardsUpdate(newRoles: Role[]) {
+      setCurrentRoles(newRoles);
     }
 
     socket.on("cardsUpdate", handleCardsUpdate);
@@ -32,14 +32,15 @@ function GameCards({ roles }) {
       </header>
       <div className={styles.block}>
         <div className={styles.cards}>
-          {currentRoles.map(([roleKey, roleData]) => {
+          {currentRoles.map(({ roleKey, roleGameData }) => {
             return (
               <RoleCard
                 key={roleKey}
                 roleKey={roleKey}
-                roleData={roleData}
+                roleGameData={roleGameData}
                 roleSelect={roleSelect}
                 setRoleSelect={setRoleSelect}
+                socket={socket}
               />
             );
           })}
@@ -47,6 +48,6 @@ function GameCards({ roles }) {
       </div>
     </div>
   );
-}
+};
 
 export default GameCards;

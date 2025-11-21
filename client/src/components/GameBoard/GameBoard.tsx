@@ -1,42 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { socket } from "../../socket";
 import styles from "./GameBoard.module.css";
+import { GameBoardProps, ObjectEvent } from "../../interfaces";
 
-function GameBoard({ userGameData }) {
-  const [modalData, setModalData] = useState(null);
-  const [isActionsModal, setIsActionsModal] = useState(false);
-  const { role, roleData } = userGameData;
+const GameBoard: React.FC<GameBoardProps> = ({ socket, userRoleData }) => {
+  const [modalData, setModalData] = useState<ObjectEvent | null>(null);
+  const [isActionsModal, setIsActionsModal] = useState<boolean>(false);
 
-  function handleEmit(action, data) {
-    if (data) {
-      console.log(`Создан emit ${action} с данными ${data}`);
-      socket.emit(action, data);
+  function handleEmit(action: string, playerSocket: string | null) {
+    if (playerSocket) {
+      console.log(`Создан emit ${action} для игрока ${playerSocket}`);
+      socket.emit(action, playerSocket);
       return;
     }
-    console.log(`Создан emit ${action}`);
-
-    socket.emit(action, data);
+    socket.emit(action);
   }
 
-  function handleActionModal() {
-    isActionsModal ? setIsActionsModal(false) : setIsActionsModal(true);
-  }
-
-  function handleNewModal(data) {
-    setModalData(data);
+  function onOpen() {
+    setIsActionsModal(true);
   }
 
   function onClose() {
-    setModalData(null);
+    setIsActionsModal(false);
+  }
+
+  function handleNewModal(objectEvent: ObjectEvent) {
+    setModalData(objectEvent);
   }
 
   useEffect(() => {
-    if (role === "therapist") {
+    if (userRoleData?.roleKey === "therapist") {
       socket.on("new-patient", handleNewModal);
     }
-
     return () => {
-      if (role === "therapist") {
+      if (userRoleData?.roleKey === "therapist") {
         socket.off("new-patient", handleNewModal);
       }
     };
@@ -46,17 +42,17 @@ function GameBoard({ userGameData }) {
     <div className={styles.conteiner}>
       {modalData && (
         <div className={styles.modal}>
-          <p>{modalData.text}</p>
+          <p>{modalData.textEvent}</p>
           <div className={styles.modalButtons}>
-            {modalData.buttons.map((button) => {
+            {modalData.buttonsEvent.map((button) => {
               return (
                 <button
+                  key={button.id}
                   onClick={() => {
-                    handleEmit(button.action, modalData.playerID);
-                    onClose();
+                    handleEmit(button.actionButton, modalData.playerSocket);
                   }}
                 >
-                  {button.text}
+                  {button.textButton}
                 </button>
               );
             })}
@@ -70,20 +66,19 @@ function GameBoard({ userGameData }) {
               <div className={styles.modalTitle}>
                 <h2 className={styles.title}>Выберите одно из действий</h2>
               </div>
-              <div
-                className={styles.headerButton}
-                onClick={() => handleActionModal()}
-              >
+              <button className={styles.headerButton} onClick={() => onClose()}>
                 <img src="/images/close.png" alt="close modal" />
-              </div>
+              </button>
             </div>
             <div className={styles.modalButtons}>
-              {roleData.buttons.map((button, index) => {
+              {userRoleData?.roleGameData.buttons.map((button) => {
                 return (
                   button.isActive && (
                     <button
-                      key={index}
-                      onClick={() => handleEmit(button.action)}
+                      key={button.id}
+                      onClick={() => {
+                        handleEmit(button.action, null);
+                      }}
                       className={styles.button}
                     >
                       <p>{button.label}</p>
@@ -107,10 +102,16 @@ function GameBoard({ userGameData }) {
         <div className={styles.infoBlock}>
           <div className={styles.cardBlock}>
             <div className={styles.cardBlockImg}>
-              <img src={roleData.image} className={styles.cardImg} />
+              <img
+                src={userRoleData?.roleGameData.image}
+                className={styles.cardImg}
+                alt=""
+              />
             </div>
             <div className={styles.cardBlockText}>
-              <h4 className={styles.cardText}>{roleData.displayName}</h4>
+              <h4 className={styles.cardText}>
+                {userRoleData?.roleGameData.displayName}
+              </h4>
             </div>
           </div>
           <div className={styles.descBlock}>
@@ -124,7 +125,9 @@ function GameBoard({ userGameData }) {
                   alt=""
                   className={styles.textImage}
                 />
-                <p className={styles.text}>{roleData.profile}</p>
+                <p className={styles.text}>
+                  {userRoleData?.roleGameData.profile}
+                </p>
               </div>
               <div className={styles.textBlock}>
                 <img
@@ -132,7 +135,9 @@ function GameBoard({ userGameData }) {
                   alt=""
                   className={styles.textImage}
                 />
-                <p className={styles.text}>{roleData.description}</p>
+                <p className={styles.text}>
+                  {userRoleData?.roleGameData.description}
+                </p>
               </div>
               <div className={styles.textBlock}>
                 <img
@@ -140,7 +145,7 @@ function GameBoard({ userGameData }) {
                   alt=""
                   className={styles.textImage}
                 />
-                <p className={styles.text}>{roleData.task}</p>
+                <p className={styles.text}>{userRoleData?.roleGameData.task}</p>
               </div>
             </div>
           </div>
@@ -149,7 +154,7 @@ function GameBoard({ userGameData }) {
               <h4 className={styles.titleText}>Номер телефона</h4>
             </header>
             <div className={styles.dataText}>
-              <p className={styles.text}>{roleData.number}</p>
+              <p className={styles.text}>{userRoleData?.roleGameData.number}</p>
             </div>
           </div>
           <div className={styles.passwordBlock}>
@@ -157,23 +162,20 @@ function GameBoard({ userGameData }) {
               <h4 className={styles.titleText}>Пароль от Госуслуг</h4>
             </header>
             <div className={styles.dataText}>
-              <p className={styles.text}>{roleData.password}</p>
+              <p className={styles.text}>
+                {userRoleData?.roleGameData.password}
+              </p>
             </div>
           </div>
         </div>
         <div className={styles.buttonBlock}>
-          <button className={styles.button}>
-            <h4
-              className={styles.buttonText}
-              onClick={() => handleActionModal()}
-            >
-              перейти к действиям
-            </h4>
+          <button className={styles.button} onClick={() => onOpen()}>
+            <h4 className={styles.buttonText}>перейти к действиям</h4>
           </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default GameBoard;
